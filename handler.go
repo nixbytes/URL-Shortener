@@ -12,12 +12,12 @@ import (
 // http.Handler will be called instead.
 func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.HandlerFunc {
 	// Return an anonymous function (http.HandlerFunc)
-	return func(w http.ResponeWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		//Extract the path from the incoming request URL
 		path := r.URL.Path
 
 		// Check if the path exists in the pathsToUrls map
-		if dest, ok := pathsToUrls; ok {
+		if dest, ok := pathsToUrls[path]; ok {
 
 			// If it exists, perform a 302 (Found) HTTP redirect to the destination URL
 			http.Redirect(w, r, dest, http.StatusFound)
@@ -27,7 +27,7 @@ func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.Handl
 		}
 
 		// If the path is not found in the map, call the fallback handler
-		fallback.ServeHttp(w, r)
+		fallback.ServeHTTP(w, r)
 	}
 }
 
